@@ -1,0 +1,145 @@
+﻿
+@model IEnumerable<Employee>
+
+
+@{
+    ViewData["Title"] = "Index";
+
+    // ViewData["Message"];
+
+    // string? ViewDataMessage = ViewData["Message"] as string;
+    // string? ViewBagMessage = ViewBag.Message;
+}
+
+<h1>All Employee</h1>
+
+<br />
+<br />
+
+@* <div class="m-3 alert alert-danger" >
+    <p>@ViewData["Message"]</p>
+</div> *@
+
+
+@* <div class="m-3 alert alert-danger">
+    <p>@ViewBag.Message</p>
+</div> *@
+
+@if(!string.IsNullOrEmpty(TempData["Message"] as string))
+{
+    <div class="m-3 alert alert-info">
+        <p>@TempData["Message"]</p>
+    </div>
+}
+
+<form>
+    <div class="container m-4">
+<div class="row">
+            <div class="col-6">
+                <input id="searchInp" placeholder="Search By Name" name="SearchInput" class="form-control" />
+            </div>
+            <div class="col-6">
+
+                <input type="submit" class="btn btn-success" value="Search" />
+            </div>
+</div>
+    </div>
+</form>
+
+<a asp-action="Create" class="btn btn-primary">Create Employee</a>
+
+<br />
+<br />
+
+@if(Model.Count() > 0)
+{
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Salary</th>
+                <th>IsActive</th>
+                <th>IsDeleted</th>
+                <th>@Html.DisplayNameFor(E => E.HiringDate )</th>
+                <th>@Html.DisplayNameFor(E => E.CreateAt)</th>
+                <th>Department</th>
+                <th>Details</th>
+                <th>Update</th>
+                <th>Delete</th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                   <td>
+                       <img src="~/Files/Images/@item.ImageName" class="img-fluid rounded-circle" />
+                   </td>
+                    <td>@item.Name</td>
+                    <td>@item.Age</td>
+                    <td>@item.Email</td>
+                    <td>@item.Address</td>
+                    <td>@item.Phone</td>
+                    <td>@item.Salary</td>
+                    <td>@item.IsActive</td>
+                    <td>@item.IsDeleted</td>
+                    <td>@item.HiringDate</td>
+                    <td>@item.CreateAt</td>
+                    @if(item.Department is null)
+                    {
+                        <td>No Department</td>
+                    }
+                    else
+                    {
+                        <td>@item.Department.Name</td>
+                    }
+
+
+                    <partial name="_ButtonPartialView" model="@item.Id.ToString()" />
+
+
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+}else
+{
+    <div class="mt-4 alert alert-success">
+        <h4>
+            There are no Employees :(
+        </h4>
+
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        const searchBar = $('#searchInp');
+        const table = $('table');
+
+        searchBar.on('keyup', function (event) {
+            var searchValue = searchBar.val();
+
+            $.ajax({
+                url: '/Employee/Search',
+                type: 'Get',
+                data: { Search: searchValue },
+                success: function (result) {
+                    table.html(result);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
